@@ -1,12 +1,12 @@
-package models;
+package lpp.fila0app.models;
 
 import jakarta.persistence.*;
-import org.springframework.lang.NonNull;
 
 @Entity
 @Table(name="modulos")
 public class Modulo {
     @Id
+    @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
     @Column(name = "usuario")
@@ -14,11 +14,12 @@ public class Modulo {
     @Column(name = "clave")
     private  String clave;
 
-    public Modulo(long id,String clave,String usuario){
+    public Modulo(long id, String usuario, String clave){
         this.id = id;
-        this.clave = clave;
         this.usuario = usuario;
+        this.clave = clave;
     }
+
     public long getId() {
         return id;
     }
@@ -26,7 +27,6 @@ public class Modulo {
     public void setId(long id) {
         this.id = id;
     }
-
 
     public String getUsuario() {
         return usuario;
