@@ -1,4 +1,4 @@
-package lpp.fila0app.config;
+package config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
