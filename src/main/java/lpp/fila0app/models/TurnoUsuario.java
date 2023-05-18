@@ -2,9 +2,15 @@ package lpp.fila0app.models;
 
 import java.sql.Timestamp;
 
-public class Turno {
+public class TurnoUsuario {
     private Integer id;
     private Integer usuario;
+    private String tipoDocumento;
+    private String numeroDocumento;
+    private String primerNombre;
+    private String segundoNombre;
+    private String primerApellido;
+    private String segundoApellido;
     private Integer modulo;
     private Timestamp fecha;
     private String categoria;
@@ -13,9 +19,15 @@ public class Turno {
     private Timestamp fechaAsignado;
     private Timestamp fechaCambio;
 
-    public Turno(
+    public TurnoUsuario(
             Integer id,
             Integer usuario,
+            String tipoDocumento,
+            String numeroDocumento,
+            String primerNombre,
+            String segundoNombre,
+            String primerApellido,
+            String segundoApellido,
             Integer modulo,
             Timestamp fecha,
             String categoria,
@@ -26,6 +38,12 @@ public class Turno {
     ) {
         this.id = id;
         this.usuario = usuario;
+        this.tipoDocumento = tipoDocumento;
+        this.numeroDocumento = numeroDocumento;
+        this.primerNombre = primerNombre;
+        this.segundoNombre = segundoNombre;
+        this.primerApellido = primerApellido;
+        this.segundoApellido = segundoApellido;
         this.modulo = modulo;
         this.fecha = fecha;
         this.categoria = categoria;
@@ -49,6 +67,54 @@ public class Turno {
 
     public void setUsuario(Integer usuario) {
         this.usuario = usuario;
+    }
+
+    public String getTipoDocumento() {
+        return tipoDocumento;
+    }
+
+    public void setTipoDocumento(String tipoDocumento) {
+        this.tipoDocumento = tipoDocumento;
+    }
+
+    public String getNumeroDocumento() {
+        return numeroDocumento;
+    }
+
+    public void setNumeroDocumento(String numeroDocumento) {
+        this.numeroDocumento = numeroDocumento;
+    }
+
+    public String getPrimerNombre() {
+        return primerNombre;
+    }
+
+    public void setPrimerNombre(String primerNombre) {
+        this.primerNombre = primerNombre;
+    }
+
+    public String getSegundoNombre() {
+        return segundoNombre;
+    }
+
+    public void setSegundoNombre(String segundoNombre) {
+        this.segundoNombre = segundoNombre;
+    }
+
+    public String getPrimerApellido() {
+        return primerApellido;
+    }
+
+    public void setPrimerApellido(String primerApellido) {
+        this.primerApellido = primerApellido;
+    }
+
+    public String getSegundoApellido() {
+        return segundoApellido;
+    }
+
+    public void setSegundoApellido(String segundoApellido) {
+        this.segundoApellido = segundoApellido;
     }
 
     public Integer getModulo() {

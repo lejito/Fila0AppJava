@@ -14,6 +14,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@CrossOrigin
 @RestController
 @RequestMapping("/api/usuarios")
 public class UsuariosController {
@@ -34,7 +35,7 @@ public class UsuariosController {
             } else {
                 Map<String, String> response = new HashMap<>();
                 response.put("error", "Los datos de ingreso son inválidos.");
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+                return ResponseEntity.ok(response);
             }
         } catch (Exception e) {
             Map<String, String> response = new HashMap<>();
