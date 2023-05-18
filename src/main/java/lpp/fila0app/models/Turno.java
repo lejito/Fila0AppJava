@@ -1,62 +1,51 @@
 package lpp.fila0app.models;
 
-import jakarta.persistence.*;
-
 import java.sql.Timestamp;
 
-@Entity
-@Table(name = "turnos")
 public class Turno {
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "id")
-    private long id;
-
-    @Column(name = "usuario")
-    private long usuario;
-
-    @Column(name = "modulo")
-    private long modulo;
-
-    @Column(name = "fecha")
+    private Integer id;
+    private Integer usuario;
+    private Integer modulo;
     private Timestamp fecha;
-
-    @Column(name = "categoria")
     private String categoria;
-
-    @Column(name = "codigo")
     private String codigo;
-
-    @Column(name = "estado")
     private String estado;
-
-    @Column(name = "fecha_asignado")
     private Timestamp fechaAsignado;
-
-    @Column(name = "fecha_cambio")
     private Timestamp fechaCambio;
 
-    public long getId() {
+    public Turno(Integer id, Integer usuario, Integer modulo, Timestamp fecha, String categoria, String codigo, String estado, Timestamp fechaAsignado, Timestamp fechaCambio) {
+        this.id = id;
+        this.usuario = usuario;
+        this.modulo = modulo;
+        this.fecha = fecha;
+        this.categoria = categoria;
+        this.codigo = codigo;
+        this.estado = estado;
+        this.fechaAsignado = fechaAsignado;
+        this.fechaCambio = fechaCambio;
+    }
+
+    public Integer getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
-    public long getUsuario() {
+    public Integer getUsuario() {
         return usuario;
     }
 
-    public void setUsuario(long usuario) {
+    public void setUsuario(Integer usuario) {
         this.usuario = usuario;
     }
 
-    public long getModulo() {
+    public Integer getModulo() {
         return modulo;
     }
 
-    public void setModulo(long modulo) {
+    public void setModulo(Integer modulo) {
         this.modulo = modulo;
     }
 

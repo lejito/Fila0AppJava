@@ -1,45 +1,60 @@
 package lpp.fila0app.controllers;
 
 import lpp.fila0app.models.Usuario;
-import lpp.fila0app.repository.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.web.bind.annotation.*;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/usuarios")
 public class UsuariosController {
-    @Autowired
-    private final UsuarioRepository usuarioRepository;
+    private final JdbcTemplate jdbcTemplate;
 
-    public UsuariosController(UsuarioRepository usuarioRepository) {
-        this.usuarioRepository = usuarioRepository;
+    @Autowired
+    public UsuariosController(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
     }
 
     @PostMapping("/validarIngreso")
-    private ResponseEntity<?> validarIngreso(@RequestBody Usuario usuario){
+    private ResponseEntity<?> validarIngreso(@RequestBody Usuario usuario) {
         try {
-            String tipoDocumento = usuario.getTipoDocumento();
-            String numeroDocumento = usuario.getNumeroDocumento();
-            Optional<Usuario> usuarioEncontrado = usuarioRepository.validarIngreso(tipoDocumento, numeroDocumento);
-            if (usuarioEncontrado.isPresent()) {
-                return ResponseEntity.ok(usuarioEncontrado.get());
-            }
-            else {
+            String sql = "SELECT * FROM usuarios WHERE tipo_documento = ? AND numero_documento = ?";
+            List<Usuario> usuariosEncontrados = jdbcTemplate.query(sql, new Object[]{usuario.getTipoDocumento(), usuario.getNumeroDocumento()}, new UsuarioMapper());
+            if (!usuariosEncontrados.isEmpty()) {
+                return ResponseEntity.ok(usuariosEncontrados.get(0));
+            } else {
                 Map<String, String> response = new HashMap<>();
-                response.put("error", "Los datos de ingreso son inválidos.'");
-                return ResponseEntity.ok(response);
+                response.put("error", "Los datos de ingreso son inválidos.");
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
             }
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             Map<String, String> response = new HashMap<>();
             response.put("error", "Ha ocurrido un error al intentar validar los datos de ingreso: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+        }
+    }
+
+    private static class UsuarioMapper implements RowMapper<Usuario> {
+        @Override
+        public Usuario mapRow(ResultSet resultSet, int rowNum) throws SQLException {
+            return new Usuario(
+                    resultSet.getInt("id"),
+                    resultSet.getString("tipo_documento"),
+                    resultSet.getString("numero_documento"),
+                    resultSet.getString("primer_nombre"),
+                    resultSet.getString("segundo_nombre"),
+                    resultSet.getString("primer_apellido"),
+                    resultSet.getString("segundo_apellido")
+            );
         }
     }
 }

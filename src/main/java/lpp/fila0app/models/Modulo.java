@@ -1,36 +1,21 @@
 package lpp.fila0app.models;
 
-import jakarta.persistence.*;
-
-@Entity
-@Table(name = "modulos")
 public class Modulo {
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "id")
-    private long id;
-
-    @Column(name = "usuario")
+    private Integer id;
     private String usuario;
-
-    @Column(name = "clave")
     private String clave;
 
-    public Modulo() {
-
-    }
-
-    public Modulo(long id, String usuario, String clave) {
+    public Modulo(Integer id, String usuario, String clave) {
         this.id = id;
         this.usuario = usuario;
         this.clave = clave;
     }
 
-    public long getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 

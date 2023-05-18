@@ -1,38 +1,38 @@
 package lpp.fila0app.models;
 
-import jakarta.persistence.*;
-
-@Entity
-@Table(name = "usuarios")
 public class Usuario {
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "id")
-    private long id;
-
-    @Column(name = "tipo_documento")
+    private Integer id;
     private String tipoDocumento;
-
-    @Column(name = "numero_documento")
     private String numeroDocumento;
-
-    @Column(name = "primer_nombre")
     private String primerNombre;
-
-    @Column(name = "segundo_nombre")
     private String segundoNombre;
-
-    @Column(name = "primer_apellido")
     private String primerApellido;
-
-    @Column(name = "segundo_apellido")
     private String segundoApellido;
 
-    public long getId() {
+    public Usuario(
+        Integer id,
+        String tipoDocumento,
+        String numeroDocumento,
+        String primerNombre,
+        String segundoNombre,
+        String primerApellido,
+        String segundoApellido
+    ) {
+        this.id = id;
+        this.tipoDocumento = tipoDocumento;
+        this.numeroDocumento = numeroDocumento;
+        this.primerNombre = primerNombre;
+        this.segundoNombre = segundoNombre;
+        this.primerApellido = primerApellido;
+        this.segundoApellido = segundoApellido;
+    }
+
+
+    public Integer getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
