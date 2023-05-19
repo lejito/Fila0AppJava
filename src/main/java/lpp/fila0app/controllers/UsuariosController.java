@@ -27,20 +27,14 @@ public class UsuariosController {
 
     @PostMapping("/validarIngreso")
     private ResponseEntity<?> validarIngreso(@RequestBody Usuario usuario) {
-        try {
-            String sql = "SELECT * FROM usuarios WHERE tipo_documento = ? AND numero_documento = ?";
-            List<Usuario> usuariosEncontrados = jdbcTemplate.query(sql, new Object[]{usuario.getTipoDocumento(), usuario.getNumeroDocumento()}, new UsuarioMapper());
-            if (!usuariosEncontrados.isEmpty()) {
-                return ResponseEntity.ok(usuariosEncontrados.get(0));
-            } else {
-                Map<String, String> response = new HashMap<>();
-                response.put("error", "Los datos de ingreso son inválidos.");
-                return ResponseEntity.ok(response);
-            }
-        } catch (Exception e) {
+        String sql = "SELECT * FROM usuarios WHERE tipo_documento = ? AND numero_documento = ?";
+        List<Usuario> usuariosEncontrados = jdbcTemplate.query(sql, new Object[]{usuario.getTipoDocumento(), usuario.getNumeroDocumento()}, new UsuarioMapper());
+        if (!usuariosEncontrados.isEmpty()) {
+            return ResponseEntity.ok(usuariosEncontrados.get(0));
+        } else {
             Map<String, String> response = new HashMap<>();
-            response.put("error", "Ha ocurrido un error al intentar validar los datos de ingreso: " + e.getMessage());
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+            response.put("warning", "Los datos de ingreso son inválidos.");
+            return ResponseEntity.ok(response);
         }
     }
 
