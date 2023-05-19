@@ -26,15 +26,13 @@ public class ModulosController {
     }
 
     @PostMapping("/validarLogin")
-    public ResponseEntity<?> validarLogin(@RequestBody Modulo modulo) {
+    public ResponseEntity<Object> validarLogin(@RequestBody Modulo modulo) {
         String sql = "SELECT * FROM modulos WHERE usuario = ? AND clave = ?";
         List<Modulo> modulosEncontrados = jdbcTemplate.query(sql, new Object[]{modulo.getUsuario(), modulo.getClave()}, new ModuloMapper());
         if (!modulosEncontrados.isEmpty()) {
             return ResponseEntity.ok(modulosEncontrados.get(0));
         } else {
-            Map<String, String> response = new HashMap<>();
-            response.put("error", "Los datos de inicio de sesión son inválidos.");
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+            return GlobalExceptionController.warningResponse("Los datos de inicio de sesión son inválidos.");
         }
     }
 

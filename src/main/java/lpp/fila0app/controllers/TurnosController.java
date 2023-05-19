@@ -28,7 +28,7 @@ public class TurnosController {
     }
 
     @PostMapping("/registrar")
-    public ResponseEntity<?> registrar(@RequestBody Turno turno) {
+    public ResponseEntity<Object> registrar(@RequestBody Turno turno) {
         try {
             String sql = "INSERT INTO turnos(usuario, categoria) VALUES (?, ?)";
 
@@ -44,9 +44,7 @@ public class TurnosController {
                 Turno turnoGenerado = mapearTurno(keyHolder.getKeys());
                 return ResponseEntity.ok(turnoGenerado);
             } else {
-                Map<String, String> response = new HashMap<>();
-                response.put("warning", "No se encontró el turno registrado.");
-                return ResponseEntity.ok(response);
+                return GlobalExceptionController.warningResponse("No se encontró el turno registrado.");
             }
         } catch (Exception e) {
             Map<String, String> response = new HashMap<>();
@@ -56,59 +54,51 @@ public class TurnosController {
     }
 
     @GetMapping("/buscarPendientes")
-    public ResponseEntity<?> buscarPendientes() {
+    public ResponseEntity<Object> buscarPendientes() {
         String sql = "SELECT * FROM turnos INNER JOIN usuarios ON usuarios.id = turnos.usuario WHERE turnos.estado = 'Pendiente' ORDER BY turnos.id ASC LIMIT 32";
         List<TurnoUsuario> turnosPendientes = jdbcTemplate.query(sql, new TurnosController.TurnoUsuarioMapper());
         if (!turnosPendientes.isEmpty()) {
             return ResponseEntity.ok(turnosPendientes);
         } else {
-            Map<String, String> response = new HashMap<>();
-            response.put("warning", "No se encontraron turnos pendientes.");
-            return ResponseEntity.ok(response);
+            return GlobalExceptionController.warningResponse("No se encontraron turnos pendientes.");
         }
     }
 
     @GetMapping("/buscarAsignados")
-    public ResponseEntity<?> buscarAsignados() {
+    public ResponseEntity<Object> buscarAsignados() {
         String sql = "SELECT * FROM turnos INNER JOIN usuarios ON usuarios.id = turnos.usuario WHERE turnos.estado = 'Asignado' ORDER BY turnos.fecha_asignado DESC LIMIT 8";
         List<TurnoUsuario> turnosAsignados = jdbcTemplate.query(sql, new TurnosController.TurnoUsuarioMapper());
         if (!turnosAsignados.isEmpty()) {
             return ResponseEntity.ok(turnosAsignados);
         } else {
-            Map<String, String> response = new HashMap<>();
-            response.put("warning", "No se encontraron turnos asignados.");
-            return ResponseEntity.ok(response);
+            return GlobalExceptionController.warningResponse("No se encontraron turnos asignados.");
         }
     }
 
     @GetMapping("/buscarCompletados")
-    public ResponseEntity<?> buscarCompletados() {
+    public ResponseEntity<Object> buscarCompletados() {
         String sql = "SELECT * FROM turnos INNER JOIN usuarios ON usuarios.id = turnos.usuario WHERE turnos.estado = 'Completado' ORDER BY turnos.fecha_cambio DESC LIMIT 32";
         List<TurnoUsuario> turnosCompletados = jdbcTemplate.query(sql, new TurnosController.TurnoUsuarioMapper());
         if (!turnosCompletados.isEmpty()) {
             return ResponseEntity.ok(turnosCompletados);
         } else {
-            Map<String, String> response = new HashMap<>();
-            response.put("warning", "No se encontraron turnos completados.");
-            return ResponseEntity.ok(response);
+            return GlobalExceptionController.warningResponse("No se encontraron turnos completados.");
         }
     }
 
     @GetMapping("/buscarCancelados")
-    public ResponseEntity<?> buscarCancelados() {
+    public ResponseEntity<Object> buscarCancelados() {
         String sql = "SELECT * FROM turnos INNER JOIN usuarios ON usuarios.id = turnos.usuario WHERE turnos.estado = 'Cancelado' ORDER BY turnos.fecha_cambio DESC LIMIT 32";
         List<TurnoUsuario> turnosCancelados = jdbcTemplate.query(sql, new TurnosController.TurnoUsuarioMapper());
         if (!turnosCancelados.isEmpty()) {
             return ResponseEntity.ok(turnosCancelados);
         } else {
-            Map<String, String> response = new HashMap<>();
-            response.put("warning", "No se encontraron turnos cancelados.");
-            return ResponseEntity.ok(response);
+            return GlobalExceptionController.warningResponse("No se encontraron turnos cancelados.");
         }
     }
 
     @PutMapping("/asignar")
-    public ResponseEntity<?> asignar(@RequestBody Turno turno) {
+    public ResponseEntity<Object> asignar(@RequestBody Turno turno) {
         String sql = "UPDATE turnos SET estado = 'Asignado', modulo = ?, fecha_asignado = CURRENT_TIMESTAMP WHERE id = (SELECT MIN(id) FROM turnos WHERE estado = 'Pendiente' AND (categoria = ? OR ? = 'N/A'))";
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
@@ -127,19 +117,15 @@ public class TurnosController {
             if (!turnosEncontrados.isEmpty()) {
                 return ResponseEntity.ok(turnosEncontrados.get(0));
             } else {
-                Map<String, String> response = new HashMap<>();
-                response.put("warning", "No se encontraron los datos del turno asignado.");
-                return ResponseEntity.ok(response);
+                return GlobalExceptionController.warningResponse("No se encontraron los datos del turno asignado.");
             }
         } else {
-            Map<String, String> response = new HashMap<>();
-            response.put("warning", "No se encontró ningun turno para asignar.");
-            return ResponseEntity.ok(response);
+            return GlobalExceptionController.warningResponse("No se encontró ningun turno para asignar.");
         }
     }
 
     @PutMapping("/actualizarEstado")
-    public ResponseEntity<?> actualizarEstado(@RequestBody Turno turno) {
+    public ResponseEntity<Object> actualizarEstado(@RequestBody Turno turno) {
         String sql = "UPDATE turnos SET estado = ?, modulo = ?, fecha_cambio = CURRENT_TIMESTAMP WHERE id = ?";
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
@@ -155,14 +141,12 @@ public class TurnosController {
             Turno turnoActualizado = mapearTurno(keyHolder.getKeys());
             return ResponseEntity.ok(turnoActualizado);
         } else {
-            Map<String, String> response = new HashMap<>();
-            response.put("warning", "No se encontró el turno a actualizar.");
-            return ResponseEntity.ok(response);
+            return GlobalExceptionController.warningResponse("No se encontró el turno a actualizar.");
         }
     }
 
     @PutMapping("/devolverAPendientes")
-    public ResponseEntity<?> devolverAPendientes(@RequestBody Turno turno) {
+    public ResponseEntity<Object> devolverAPendientes(@RequestBody Turno turno) {
         String sql = "UPDATE turnos SET estado = 'Pendiente', modulo = NULL, fecha_cambio = CURRENT_TIMESTAMP WHERE id = ?";
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
@@ -176,9 +160,7 @@ public class TurnosController {
             Turno turnoActualizado = mapearTurno(keyHolder.getKeys());
             return ResponseEntity.ok(turnoActualizado);
         } else {
-            Map<String, String> response = new HashMap<>();
-            response.put("warning", "No se encontró el turno a devolver a pendientes.");
-            return ResponseEntity.ok(response);
+            return GlobalExceptionController.warningResponse("No se encontró el turno a devolver a pendientes.");
         }
     }
 
