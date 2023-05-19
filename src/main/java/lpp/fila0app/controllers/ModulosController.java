@@ -26,7 +26,7 @@ public class ModulosController {
     }
 
     @PostMapping("/validarLogin")
-    private ResponseEntity<?> validarLogin(@RequestBody Modulo modulo) {
+    public ResponseEntity<?> validarLogin(@RequestBody Modulo modulo) {
         String sql = "SELECT * FROM modulos WHERE usuario = ? AND clave = ?";
         List<Modulo> modulosEncontrados = jdbcTemplate.query(sql, new Object[]{modulo.getUsuario(), modulo.getClave()}, new ModuloMapper());
         if (!modulosEncontrados.isEmpty()) {

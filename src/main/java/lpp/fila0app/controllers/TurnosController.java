@@ -28,7 +28,7 @@ public class TurnosController {
     }
 
     @PostMapping("/registrar")
-    private ResponseEntity<?> registrar(@RequestBody Turno turno) {
+    public ResponseEntity<?> registrar(@RequestBody Turno turno) {
         try {
             String sql = "INSERT INTO turnos(usuario, categoria) VALUES (?, ?)";
 
@@ -41,17 +41,7 @@ public class TurnosController {
             }, keyHolder);
 
             if (rowsAffected > 0) {
-                Turno turnoGenerado = new Turno(
-                        (Integer) keyHolder.getKeys().get("id"),
-                        (Integer) keyHolder.getKeys().get("usuario"),
-                        (Integer) keyHolder.getKeys().get("modulo"),
-                        (Timestamp) keyHolder.getKeys().get("fecha"),
-                        (String) keyHolder.getKeys().get("categoria"),
-                        (String) keyHolder.getKeys().get("codigo"),
-                        (String) keyHolder.getKeys().get("estado"),
-                        (Timestamp) keyHolder.getKeys().get("fecha_asignado"),
-                        (Timestamp) keyHolder.getKeys().get("fecha_cambio")
-                );
+                Turno turnoGenerado = mapearTurno(keyHolder.getKeys());
                 return ResponseEntity.ok(turnoGenerado);
             } else {
                 Map<String, String> response = new HashMap<>();
@@ -66,7 +56,7 @@ public class TurnosController {
     }
 
     @GetMapping("/buscarPendientes")
-    private ResponseEntity<?> buscarPendientes() {
+    public ResponseEntity<?> buscarPendientes() {
         String sql = "SELECT * FROM turnos INNER JOIN usuarios ON usuarios.id = turnos.usuario WHERE turnos.estado = 'Pendiente' ORDER BY turnos.id ASC LIMIT 32";
         List<TurnoUsuario> turnosPendientes = jdbcTemplate.query(sql, new TurnosController.TurnoUsuarioMapper());
         if (!turnosPendientes.isEmpty()) {
@@ -79,7 +69,7 @@ public class TurnosController {
     }
 
     @GetMapping("/buscarAsignados")
-    private ResponseEntity<?> buscarAsignados() {
+    public ResponseEntity<?> buscarAsignados() {
         String sql = "SELECT * FROM turnos INNER JOIN usuarios ON usuarios.id = turnos.usuario WHERE turnos.estado = 'Asignado' ORDER BY turnos.fecha_asignado DESC LIMIT 8";
         List<TurnoUsuario> turnosAsignados = jdbcTemplate.query(sql, new TurnosController.TurnoUsuarioMapper());
         if (!turnosAsignados.isEmpty()) {
@@ -92,7 +82,7 @@ public class TurnosController {
     }
 
     @GetMapping("/buscarCompletados")
-    private ResponseEntity<?> buscarCompletados() {
+    public ResponseEntity<?> buscarCompletados() {
         String sql = "SELECT * FROM turnos INNER JOIN usuarios ON usuarios.id = turnos.usuario WHERE turnos.estado = 'Completado' ORDER BY turnos.fecha_cambio DESC LIMIT 32";
         List<TurnoUsuario> turnosCompletados = jdbcTemplate.query(sql, new TurnosController.TurnoUsuarioMapper());
         if (!turnosCompletados.isEmpty()) {
@@ -105,7 +95,7 @@ public class TurnosController {
     }
 
     @GetMapping("/buscarCancelados")
-    private ResponseEntity<?> buscarCancelados() {
+    public ResponseEntity<?> buscarCancelados() {
         String sql = "SELECT * FROM turnos INNER JOIN usuarios ON usuarios.id = turnos.usuario WHERE turnos.estado = 'Cancelado' ORDER BY turnos.fecha_cambio DESC LIMIT 32";
         List<TurnoUsuario> turnosCancelados = jdbcTemplate.query(sql, new TurnosController.TurnoUsuarioMapper());
         if (!turnosCancelados.isEmpty()) {
@@ -118,7 +108,7 @@ public class TurnosController {
     }
 
     @PutMapping("/asignar")
-    private ResponseEntity<?> asignar(@RequestBody Turno turno) {
+    public ResponseEntity<?> asignar(@RequestBody Turno turno) {
         String sql = "UPDATE turnos SET estado = 'Asignado', modulo = ?, fecha_asignado = CURRENT_TIMESTAMP WHERE id = (SELECT MIN(id) FROM turnos WHERE estado = 'Pendiente' AND (categoria = ? OR ? = 'N/A'))";
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
@@ -149,7 +139,7 @@ public class TurnosController {
     }
 
     @PutMapping("/actualizarEstado")
-    private ResponseEntity<?> actualizarEstado(@RequestBody Turno turno) {
+    public ResponseEntity<?> actualizarEstado(@RequestBody Turno turno) {
         String sql = "UPDATE turnos SET estado = ?, modulo = ?, fecha_cambio = CURRENT_TIMESTAMP WHERE id = ?";
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
@@ -162,17 +152,7 @@ public class TurnosController {
         }, keyHolder);
 
         if (rowsAffected > 0) {
-            Turno turnoActualizado = new Turno(
-                    (Integer) keyHolder.getKeys().get("id"),
-                    (Integer) keyHolder.getKeys().get("usuario"),
-                    (Integer) keyHolder.getKeys().get("modulo"),
-                    (Timestamp) keyHolder.getKeys().get("fecha"),
-                    (String) keyHolder.getKeys().get("categoria"),
-                    (String) keyHolder.getKeys().get("codigo"),
-                    (String) keyHolder.getKeys().get("estado"),
-                    (Timestamp) keyHolder.getKeys().get("fecha_asignado"),
-                    (Timestamp) keyHolder.getKeys().get("fecha_cambio")
-            );
+            Turno turnoActualizado = mapearTurno(keyHolder.getKeys());
             return ResponseEntity.ok(turnoActualizado);
         } else {
             Map<String, String> response = new HashMap<>();
@@ -182,7 +162,7 @@ public class TurnosController {
     }
 
     @PutMapping("/devolverAPendientes")
-    private ResponseEntity<?> devolverAPendientes(@RequestBody Turno turno) {
+    public ResponseEntity<?> devolverAPendientes(@RequestBody Turno turno) {
         String sql = "UPDATE turnos SET estado = 'Pendiente', modulo = NULL, fecha_cambio = CURRENT_TIMESTAMP WHERE id = ?";
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
@@ -193,23 +173,27 @@ public class TurnosController {
         }, keyHolder);
 
         if (rowsAffected > 0) {
-            Turno turnoActualizado = new Turno(
-                    (Integer) keyHolder.getKeys().get("id"),
-                    (Integer) keyHolder.getKeys().get("usuario"),
-                    (Integer) keyHolder.getKeys().get("modulo"),
-                    (Timestamp) keyHolder.getKeys().get("fecha"),
-                    (String) keyHolder.getKeys().get("categoria"),
-                    (String) keyHolder.getKeys().get("codigo"),
-                    (String) keyHolder.getKeys().get("estado"),
-                    (Timestamp) keyHolder.getKeys().get("fecha_asignado"),
-                    (Timestamp) keyHolder.getKeys().get("fecha_cambio")
-            );
+            Turno turnoActualizado = mapearTurno(keyHolder.getKeys());
             return ResponseEntity.ok(turnoActualizado);
         } else {
             Map<String, String> response = new HashMap<>();
             response.put("warning", "No se encontró el turno a devolver a pendientes.");
             return ResponseEntity.ok(response);
         }
+    }
+
+    private Turno mapearTurno(Map<String, Object> keys) {
+        return new Turno(
+                (Integer) keys.get("id"),
+                (Integer) keys.get("usuario"),
+                (Integer) keys.get("modulo"),
+                (Timestamp) keys.get("fecha"),
+                (String) keys.get("categoria"),
+                (String) keys.get("codigo"),
+                (String) keys.get("estado"),
+                (Timestamp) keys.get("fecha_asignado"),
+                (Timestamp) keys.get("fecha_cambio")
+        );
     }
 
     private static class TurnoMapper implements RowMapper<Turno> {

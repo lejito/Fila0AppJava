@@ -26,7 +26,7 @@ public class UsuariosController {
     }
 
     @PostMapping("/validarIngreso")
-    private ResponseEntity<?> validarIngreso(@RequestBody Usuario usuario) {
+    public ResponseEntity<?> validarIngreso(@RequestBody Usuario usuario) {
         String sql = "SELECT * FROM usuarios WHERE tipo_documento = ? AND numero_documento = ?";
         List<Usuario> usuariosEncontrados = jdbcTemplate.query(sql, new Object[]{usuario.getTipoDocumento(), usuario.getNumeroDocumento()}, new UsuarioMapper());
         if (!usuariosEncontrados.isEmpty()) {
