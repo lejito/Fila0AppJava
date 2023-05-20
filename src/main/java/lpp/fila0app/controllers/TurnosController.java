@@ -21,6 +21,21 @@ import java.util.Map;
 @RequestMapping("/api/turnos")
 public class TurnosController {
     private final JdbcTemplate jdbcTemplate;
+    public static final String ID_COLUMN = "id";
+    public static final String USUARIO_COLUMN = "usuario";
+    public static final String TIPO_DOCUMENTO_COLUMN = "tipo_documento";
+    public static final String NUMERO_DOCUMENTO_COLUMN = "numero_documento";
+    public static final String PRIMER_NOMBRE_COLUMN = "primer_nombre";
+    public static final String SEGUNDO_NOMBRE_COLUMN = "segundo_nombre";
+    public static final String PRIMER_APELLIDO_COLUMN = "primer_apellido";
+    public static final String SEGUNDO_APELLIDO_COLUMN = "segundo_apellido";
+    public static final String MODULO_COLUMN = "modulo";
+    public static final String FECHA_COLUMN = "fecha";
+    public static final String CATEGORIA_COLUMN = "categoria";
+    public static final String CODIGO_COLUMN = "codigo";
+    public static final String ESTADO_COLUMN = "estado";
+    public static final String FECHA_ASIGNADO_COLUMN = "fecha_asignado";
+    public static final String FECHA_CAMBIO_COLUMN = "fecha_cambio";
 
     @Autowired
     public TurnosController(JdbcTemplate jdbcTemplate) {
@@ -166,15 +181,15 @@ public class TurnosController {
 
     private Turno mapearTurno(Map<String, Object> keys) {
         return new Turno(
-                (Integer) keys.get("id"),
-                (Integer) keys.get("usuario"),
-                (Integer) keys.get("modulo"),
-                (Timestamp) keys.get("fecha"),
-                (String) keys.get("categoria"),
-                (String) keys.get("codigo"),
-                (String) keys.get("estado"),
-                (Timestamp) keys.get("fecha_asignado"),
-                (Timestamp) keys.get("fecha_cambio")
+                (Integer) keys.get(ID_COLUMN),
+                (Integer) keys.get(USUARIO_COLUMN),
+                (Integer) keys.get(MODULO_COLUMN),
+                (Timestamp) keys.get(FECHA_COLUMN),
+                (String) keys.get(CATEGORIA_COLUMN),
+                (String) keys.get(CODIGO_COLUMN),
+                (String) keys.get(ESTADO_COLUMN),
+                (Timestamp) keys.get(FECHA_ASIGNADO_COLUMN),
+                (Timestamp) keys.get(FECHA_CAMBIO_COLUMN)
         );
     }
 
@@ -182,15 +197,15 @@ public class TurnosController {
         @Override
         public Turno mapRow(ResultSet resultSet, int rowNum) throws SQLException {
             return new Turno(
-                    resultSet.getInt("id"),
-                    resultSet.getInt("usuario"),
-                    resultSet.getInt("modulo"),
-                    resultSet.getTimestamp("fecha"),
-                    resultSet.getString("categoria"),
-                    resultSet.getString("codigo"),
-                    resultSet.getString("estado"),
-                    resultSet.getTimestamp("fecha_asignado"),
-                    resultSet.getTimestamp("fecha_cambio")
+                    resultSet.getInt(TurnosController.ID_COLUMN),
+                    resultSet.getInt(TurnosController.USUARIO_COLUMN),
+                    resultSet.getInt(TurnosController.MODULO_COLUMN),
+                    resultSet.getTimestamp(TurnosController.FECHA_COLUMN),
+                    resultSet.getString(TurnosController.CATEGORIA_COLUMN),
+                    resultSet.getString(TurnosController.CODIGO_COLUMN),
+                    resultSet.getString(TurnosController.ESTADO_COLUMN),
+                    resultSet.getTimestamp(TurnosController.FECHA_ASIGNADO_COLUMN),
+                    resultSet.getTimestamp(TurnosController.FECHA_CAMBIO_COLUMN)
             );
         }
     }
@@ -199,21 +214,21 @@ public class TurnosController {
         @Override
         public TurnoUsuario mapRow(ResultSet resultSet, int rowNum) throws SQLException {
             return new TurnoUsuario(
-                    resultSet.getInt("id"),
-                    resultSet.getInt("usuario"),
-                    resultSet.getString("tipo_documento"),
-                    resultSet.getString("numero_documento"),
-                    resultSet.getString("primer_nombre"),
-                    resultSet.getString("segundo_nombre"),
-                    resultSet.getString("primer_apellido"),
-                    resultSet.getString("segundo_apellido"),
-                    resultSet.getInt("modulo"),
-                    resultSet.getTimestamp("fecha"),
-                    resultSet.getString("categoria"),
-                    resultSet.getString("codigo"),
-                    resultSet.getString("estado"),
-                    resultSet.getTimestamp("fecha_asignado"),
-                    resultSet.getTimestamp("fecha_cambio")
+                    resultSet.getInt(TurnosController.ID_COLUMN),
+                    resultSet.getInt(TurnosController.USUARIO_COLUMN),
+                    resultSet.getString(TurnosController.TIPO_DOCUMENTO_COLUMN),
+                    resultSet.getString(TurnosController.NUMERO_DOCUMENTO_COLUMN),
+                    resultSet.getString(TurnosController.PRIMER_NOMBRE_COLUMN),
+                    resultSet.getString(TurnosController.SEGUNDO_NOMBRE_COLUMN),
+                    resultSet.getString(TurnosController.PRIMER_APELLIDO_COLUMN),
+                    resultSet.getString(TurnosController.SEGUNDO_APELLIDO_COLUMN),
+                    resultSet.getInt(TurnosController.MODULO_COLUMN),
+                    resultSet.getTimestamp(TurnosController.FECHA_COLUMN),
+                    resultSet.getString(TurnosController.CATEGORIA_COLUMN),
+                    resultSet.getString(TurnosController.CODIGO_COLUMN),
+                    resultSet.getString(TurnosController.ESTADO_COLUMN),
+                    resultSet.getTimestamp(TurnosController.FECHA_ASIGNADO_COLUMN),
+                    resultSet.getTimestamp(TurnosController.FECHA_CAMBIO_COLUMN)
             );
         }
     }
