@@ -19,40 +19,6 @@ public class TurnoUsuario {
     private Timestamp fechaAsignado;
     private Timestamp fechaCambio;
 
-    public TurnoUsuario(
-            Integer id,
-            Integer usuario,
-            String tipoDocumento,
-            String numeroDocumento,
-            String primerNombre,
-            String segundoNombre,
-            String primerApellido,
-            String segundoApellido,
-            Integer modulo,
-            Timestamp fecha,
-            String categoria,
-            String codigo,
-            String estado,
-            Timestamp fechaAsignado,
-            Timestamp fechaCambio
-    ) {
-        this.id = id;
-        this.usuario = usuario;
-        this.tipoDocumento = tipoDocumento;
-        this.numeroDocumento = numeroDocumento;
-        this.primerNombre = primerNombre;
-        this.segundoNombre = segundoNombre;
-        this.primerApellido = primerApellido;
-        this.segundoApellido = segundoApellido;
-        this.modulo = modulo;
-        this.fecha = fecha;
-        this.categoria = categoria;
-        this.codigo = codigo;
-        this.estado = estado;
-        this.fechaAsignado = fechaAsignado;
-        this.fechaCambio = fechaCambio;
-    }
-
     public Integer getId() {
         return id;
     }

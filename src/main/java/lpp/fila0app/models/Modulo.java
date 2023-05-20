@@ -5,12 +5,6 @@ public class Modulo {
     private String usuario;
     private String clave;
 
-    public Modulo(Integer id, String usuario, String clave) {
-        this.id = id;
-        this.usuario = usuario;
-        this.clave = clave;
-    }
-
     public Integer getId() {
         return id;
     }

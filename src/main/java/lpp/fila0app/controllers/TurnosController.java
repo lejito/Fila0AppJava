@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.web.bind.annotation.*;
@@ -15,6 +14,8 @@ import java.sql.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 @CrossOrigin
 @RestController
@@ -56,7 +57,7 @@ public class TurnosController {
             }, keyHolder);
 
             if (rowsAffected > 0) {
-                Turno turnoGenerado = mapearTurno(keyHolder.getKeys());
+                Turno turnoGenerado = mapearTurno(Objects.requireNonNull(keyHolder.getKeys()));
                 return ResponseEntity.ok(turnoGenerado);
             } else {
                 return GlobalExceptionController.warningResponse("No se encontró el turno registrado.");
@@ -71,7 +72,7 @@ public class TurnosController {
     @GetMapping("/buscarPendientes")
     public ResponseEntity<Object> buscarPendientes() {
         String sql = "SELECT * FROM turnos INNER JOIN usuarios ON usuarios.id = turnos.usuario WHERE turnos.estado = 'Pendiente' ORDER BY turnos.id ASC LIMIT 32";
-        List<TurnoUsuario> turnosPendientes = jdbcTemplate.query(sql, new TurnosController.TurnoUsuarioMapper());
+        List<TurnoUsuario> turnosPendientes = mapearListaTurnoUsuario(jdbcTemplate.queryForList(sql));
         if (!turnosPendientes.isEmpty()) {
             return ResponseEntity.ok(turnosPendientes);
         } else {
@@ -82,7 +83,7 @@ public class TurnosController {
     @GetMapping("/buscarAsignados")
     public ResponseEntity<Object> buscarAsignados() {
         String sql = "SELECT * FROM turnos INNER JOIN usuarios ON usuarios.id = turnos.usuario WHERE turnos.estado = 'Asignado' ORDER BY turnos.fecha_asignado DESC LIMIT 8";
-        List<TurnoUsuario> turnosAsignados = jdbcTemplate.query(sql, new TurnosController.TurnoUsuarioMapper());
+        List<TurnoUsuario> turnosAsignados = mapearListaTurnoUsuario(jdbcTemplate.queryForList(sql));
         if (!turnosAsignados.isEmpty()) {
             return ResponseEntity.ok(turnosAsignados);
         } else {
@@ -93,7 +94,7 @@ public class TurnosController {
     @GetMapping("/buscarCompletados")
     public ResponseEntity<Object> buscarCompletados() {
         String sql = "SELECT * FROM turnos INNER JOIN usuarios ON usuarios.id = turnos.usuario WHERE turnos.estado = 'Completado' ORDER BY turnos.fecha_cambio DESC LIMIT 32";
-        List<TurnoUsuario> turnosCompletados = jdbcTemplate.query(sql, new TurnosController.TurnoUsuarioMapper());
+        List<TurnoUsuario> turnosCompletados = mapearListaTurnoUsuario(jdbcTemplate.queryForList(sql));
         if (!turnosCompletados.isEmpty()) {
             return ResponseEntity.ok(turnosCompletados);
         } else {
@@ -104,7 +105,7 @@ public class TurnosController {
     @GetMapping("/buscarCancelados")
     public ResponseEntity<Object> buscarCancelados() {
         String sql = "SELECT * FROM turnos INNER JOIN usuarios ON usuarios.id = turnos.usuario WHERE turnos.estado = 'Cancelado' ORDER BY turnos.fecha_cambio DESC LIMIT 32";
-        List<TurnoUsuario> turnosCancelados = jdbcTemplate.query(sql, new TurnosController.TurnoUsuarioMapper());
+        List<TurnoUsuario> turnosCancelados = mapearListaTurnoUsuario(jdbcTemplate.queryForList(sql));
         if (!turnosCancelados.isEmpty()) {
             return ResponseEntity.ok(turnosCancelados);
         } else {
@@ -126,9 +127,9 @@ public class TurnosController {
         }, keyHolder);
 
         if (rowsAffected > 0) {
-            int idTurno = (int) keyHolder.getKeys().get("id");
+            int idTurno = (int) Objects.requireNonNull(keyHolder.getKeys()).get("id");
             String sql2 = "SELECT * FROM turnos INNER JOIN usuarios ON usuarios.id = turnos.usuario WHERE turnos.id = ?";
-            List<TurnoUsuario> turnosEncontrados = jdbcTemplate.query(sql2, new TurnosController.TurnoUsuarioMapper(), idTurno);
+            List<TurnoUsuario> turnosEncontrados = mapearListaTurnoUsuario(jdbcTemplate.queryForList(sql2, idTurno));
             if (!turnosEncontrados.isEmpty()) {
                 return ResponseEntity.ok(turnosEncontrados.get(0));
             } else {
@@ -153,7 +154,7 @@ public class TurnosController {
         }, keyHolder);
 
         if (rowsAffected > 0) {
-            Turno turnoActualizado = mapearTurno(keyHolder.getKeys());
+            Turno turnoActualizado = mapearTurno(Objects.requireNonNull(keyHolder.getKeys()));
             return ResponseEntity.ok(turnoActualizado);
         } else {
             return GlobalExceptionController.warningResponse("No se encontró el turno a actualizar.");
@@ -172,7 +173,7 @@ public class TurnosController {
         }, keyHolder);
 
         if (rowsAffected > 0) {
-            Turno turnoActualizado = mapearTurno(keyHolder.getKeys());
+            Turno turnoActualizado = mapearTurno(Objects.requireNonNull(keyHolder.getKeys()));
             return ResponseEntity.ok(turnoActualizado);
         } else {
             return GlobalExceptionController.warningResponse("No se encontró el turno a devolver a pendientes.");
@@ -180,56 +181,40 @@ public class TurnosController {
     }
 
     private Turno mapearTurno(Map<String, Object> keys) {
-        return new Turno(
-                (Integer) keys.get(ID_COLUMN),
-                (Integer) keys.get(USUARIO_COLUMN),
-                (Integer) keys.get(MODULO_COLUMN),
-                (Timestamp) keys.get(FECHA_COLUMN),
-                (String) keys.get(CATEGORIA_COLUMN),
-                (String) keys.get(CODIGO_COLUMN),
-                (String) keys.get(ESTADO_COLUMN),
-                (Timestamp) keys.get(FECHA_ASIGNADO_COLUMN),
-                (Timestamp) keys.get(FECHA_CAMBIO_COLUMN)
-        );
+        Turno turno = new Turno();
+        turno.setId((Integer) keys.get(ID_COLUMN));
+        turno.setUsuario((Integer) keys.get(USUARIO_COLUMN));
+        turno.setModulo((Integer) keys.get(MODULO_COLUMN));
+        turno.setFecha((Timestamp) keys.get(FECHA_COLUMN));
+        turno.setCategoria((String) keys.get(CATEGORIA_COLUMN));
+        turno.setCodigo((String) keys.get(CODIGO_COLUMN));
+        turno.setEstado((String) keys.get(ESTADO_COLUMN));
+        turno.setFechaAsignado((Timestamp) keys.get(FECHA_ASIGNADO_COLUMN));
+        turno.setFechaCambio((Timestamp) keys.get(FECHA_CAMBIO_COLUMN));
+        return turno;
     }
 
-    private static class TurnoMapper implements RowMapper<Turno> {
-        @Override
-        public Turno mapRow(ResultSet resultSet, int rowNum) throws SQLException {
-            return new Turno(
-                    resultSet.getInt(TurnosController.ID_COLUMN),
-                    resultSet.getInt(TurnosController.USUARIO_COLUMN),
-                    resultSet.getInt(TurnosController.MODULO_COLUMN),
-                    resultSet.getTimestamp(TurnosController.FECHA_COLUMN),
-                    resultSet.getString(TurnosController.CATEGORIA_COLUMN),
-                    resultSet.getString(TurnosController.CODIGO_COLUMN),
-                    resultSet.getString(TurnosController.ESTADO_COLUMN),
-                    resultSet.getTimestamp(TurnosController.FECHA_ASIGNADO_COLUMN),
-                    resultSet.getTimestamp(TurnosController.FECHA_CAMBIO_COLUMN)
-            );
-        }
+    private TurnoUsuario mapearTurnoUsuario(Map<String, Object> keys) {
+        TurnoUsuario turnoUsuario = new TurnoUsuario();
+        turnoUsuario.setId((Integer) keys.get(ID_COLUMN));
+        turnoUsuario.setUsuario((Integer) keys.get(USUARIO_COLUMN));
+        turnoUsuario.setTipoDocumento((String) keys.get(TIPO_DOCUMENTO_COLUMN));
+        turnoUsuario.setNumeroDocumento((String) keys.get(NUMERO_DOCUMENTO_COLUMN));
+        turnoUsuario.setPrimerNombre((String) keys.get(PRIMER_NOMBRE_COLUMN));
+        turnoUsuario.setSegundoNombre((String) keys.get(SEGUNDO_NOMBRE_COLUMN));
+        turnoUsuario.setPrimerApellido((String) keys.get(PRIMER_APELLIDO_COLUMN));
+        turnoUsuario.setSegundoApellido((String) keys.get(SEGUNDO_APELLIDO_COLUMN));
+        turnoUsuario.setModulo((Integer) keys.get(MODULO_COLUMN));
+        turnoUsuario.setFecha((Timestamp) keys.get(FECHA_COLUMN));
+        turnoUsuario.setCategoria((String) keys.get(CATEGORIA_COLUMN));
+        turnoUsuario.setCodigo((String) keys.get(CODIGO_COLUMN));
+        turnoUsuario.setEstado((String) keys.get(ESTADO_COLUMN));
+        turnoUsuario.setFechaAsignado((Timestamp) keys.get(FECHA_ASIGNADO_COLUMN));
+        turnoUsuario.setFechaCambio((Timestamp) keys.get(FECHA_CAMBIO_COLUMN));
+        return turnoUsuario;
     }
 
-    private static class TurnoUsuarioMapper implements RowMapper<TurnoUsuario> {
-        @Override
-        public TurnoUsuario mapRow(ResultSet resultSet, int rowNum) throws SQLException {
-            return new TurnoUsuario(
-                    resultSet.getInt(TurnosController.ID_COLUMN),
-                    resultSet.getInt(TurnosController.USUARIO_COLUMN),
-                    resultSet.getString(TurnosController.TIPO_DOCUMENTO_COLUMN),
-                    resultSet.getString(TurnosController.NUMERO_DOCUMENTO_COLUMN),
-                    resultSet.getString(TurnosController.PRIMER_NOMBRE_COLUMN),
-                    resultSet.getString(TurnosController.SEGUNDO_NOMBRE_COLUMN),
-                    resultSet.getString(TurnosController.PRIMER_APELLIDO_COLUMN),
-                    resultSet.getString(TurnosController.SEGUNDO_APELLIDO_COLUMN),
-                    resultSet.getInt(TurnosController.MODULO_COLUMN),
-                    resultSet.getTimestamp(TurnosController.FECHA_COLUMN),
-                    resultSet.getString(TurnosController.CATEGORIA_COLUMN),
-                    resultSet.getString(TurnosController.CODIGO_COLUMN),
-                    resultSet.getString(TurnosController.ESTADO_COLUMN),
-                    resultSet.getTimestamp(TurnosController.FECHA_ASIGNADO_COLUMN),
-                    resultSet.getTimestamp(TurnosController.FECHA_CAMBIO_COLUMN)
-            );
-        }
+    private List<TurnoUsuario> mapearListaTurnoUsuario(List<Map<String, Object>> mapList) {
+        return mapList.stream().map(this::mapearTurnoUsuario).collect(Collectors.toList());
     }
 }

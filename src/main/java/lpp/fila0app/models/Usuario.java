@@ -9,25 +9,6 @@ public class Usuario {
     private String primerApellido;
     private String segundoApellido;
 
-    public Usuario(
-        Integer id,
-        String tipoDocumento,
-        String numeroDocumento,
-        String primerNombre,
-        String segundoNombre,
-        String primerApellido,
-        String segundoApellido
-    ) {
-        this.id = id;
-        this.tipoDocumento = tipoDocumento;
-        this.numeroDocumento = numeroDocumento;
-        this.primerNombre = primerNombre;
-        this.segundoNombre = segundoNombre;
-        this.primerApellido = primerApellido;
-        this.segundoApellido = segundoApellido;
-    }
-
-
     public Integer getId() {
         return id;
     }

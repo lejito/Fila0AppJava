@@ -13,28 +13,6 @@ public class Turno {
     private Timestamp fechaAsignado;
     private Timestamp fechaCambio;
 
-    public Turno(
-            Integer id,
-            Integer usuario,
-            Integer modulo,
-            Timestamp fecha,
-            String categoria,
-            String codigo,
-            String estado,
-            Timestamp fechaAsignado,
-            Timestamp fechaCambio
-    ) {
-        this.id = id;
-        this.usuario = usuario;
-        this.modulo = modulo;
-        this.fecha = fecha;
-        this.categoria = categoria;
-        this.codigo = codigo;
-        this.estado = estado;
-        this.fechaAsignado = fechaAsignado;
-        this.fechaCambio = fechaCambio;
-    }
-
     public Integer getId() {
         return id;
     }
